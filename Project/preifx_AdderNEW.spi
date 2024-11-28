@@ -1,0 +1,46 @@
+*** SPICE deck for cell preifx_AdderNEW{lay} from library IC_PROJECT_FINAL_VERSION
+*** Created on Sun Aug 18, 2024 15:06:14
+*** Last revised on Thu Aug 22, 2024 18:44:08
+*** Written on Thu Aug 22, 2024 18:44:23 by Electric VLSI Design System, version 9.07
+*** Layout tech: mocmos, foundry MOSIS
+*** UC SPICE *** , MIN_RESIST 4.0, MIN_CAPAC 0.1FF
+
+*** SUBCIRCUIT IC_PROJECT_FINAL_VERSION__inv FROM CELL inv{lay}
+.SUBCKT IC_PROJECT_FINAL_VERSION__inv gnd in out vdd
+Mnmos@0 gnd in out gnd NMOS L=0.044U W=0.176U AS=0.038P AD=0.078P PS=0.814U PD=1.826U
+Mpmos@0 vdd in out vdd PMOS L=0.044U W=0.352U AS=0.038P AD=0.12P PS=0.814U PD=2.31U
+.ENDS IC_PROJECT_FINAL_VERSION__inv
+
+*** SUBCIRCUIT IC_PROJECT_FINAL_VERSION__nand FROM CELL nand{lay}
+.SUBCKT IC_PROJECT_FINAL_VERSION__nand A B gnd out vdd
+Mnmos@0 net@20 B out gnd NMOS L=0.044U W=0.352U AS=0.043P AD=0.023P PS=0.711U PD=0.484U
+Mnmos@1 gnd A net@20 gnd NMOS L=0.044U W=0.352U AS=0.023P AD=0.142P PS=0.484U PD=2.882U
+Mpmos@0 out B vdd vdd PMOS L=0.044U W=0.352U AS=0.161P AD=0.043P PS=2.926U PD=0.711U
+Mpmos@1 net@21 A out vdd PMOS L=0.044U W=0.352U AS=0.043P AD=0.058P PS=0.711U PD=1.034U
+.ENDS IC_PROJECT_FINAL_VERSION__nand
+
+*** SUBCIRCUIT IC_PROJECT_FINAL_VERSION__xor FROM CELL xor{lay}
+.SUBCKT IC_PROJECT_FINAL_VERSION__xor A B gnd out vdd
+Xinv@0 gnd A out vdd IC_PROJECT_FINAL_VERSION__inv
+Mnmos@0 gnd A A gnd NMOS L=0.044U W=0.176U AS=0.038P AD=0.025P PS=0.814U PD=0.638U
+Mpmos@0 net@42 A A vdd PMOS L=0.044U W=0.352U AS=0.038P AD=0.031P PS=0.814U PD=0.528U
+Mpmos@1 B B net@42 vdd PMOS L=0.044U W=0.352U AS=0.031P AD=0.05P PS=0.528U PD=0.99U
+.ENDS IC_PROJECT_FINAL_VERSION__xor
+
+*** TOP LEVEL CELL: preifx_AdderNEW{lay}
+Xinv@4 gnd Bi net@167 vdd IC_PROJECT_FINAL_VERSION__inv
+Xinv@5 gnd net@185 GI vdd IC_PROJECT_FINAL_VERSION__inv
+Xnand@3 net@167 Ai gnd net@185 vdd IC_PROJECT_FINAL_VERSION__nand
+Xxor@3 Bi Ai gnd Pi vdd IC_PROJECT_FINAL_VERSION__xor
+
+* Spice Code nodes in cell cell 'preifx_AdderNEW{lay}'
+vdd vdd 0 DC 1.5
+va Ai 0 pwl 0n 0 10n 0 12n  1.5 22n  1.5 24n 0 34n 0 36n  1.5 46n  1.5 48n 0
+vb Bi 0 pwl 0n 0 22n 0 24n  1.5 46n  1.5 48n 0
+cload_gi Gi 0 250fF
+cload_pi Pi 0 250fF
+.measure tran tf trig v(out) val=1.6 fall=1 td=34ns trag v(out) val=0.3 fall=1
+.measure tran tr trig v(out) val=0.3 rise=1 td=46ns trag v(out) val=1.6 rise=1
+.tran 0 0.1us
+.INCLUDE C:\22nm.txt
+.END
